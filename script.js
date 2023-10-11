@@ -1,7 +1,5 @@
-// Login funtionality
 "use strict";
 
-/////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // BANKIST APP
 
@@ -102,11 +100,11 @@ const displayMovements = function (movements) {
 
 //-------------------------
 
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce((acc, cur, i) => acc + cur, 0);
-  labelBalance.textContent = `${balance} EUR`;
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, cur, i) => acc + cur, 0);
+
+  labelBalance.textContent = `${acc.balance} EUR`;
 };
-// calcDisplayBalance(account1.movements);
 
 //-------------------------
 
@@ -155,6 +153,18 @@ createUsernames(accounts);
 
 //-------------------------
 
+// UPDATE UI
+const updateUi = function (acc) {
+  // Display movements
+  displayMovements(currentAccount.movements);
+
+  // Display balance
+  calcDisplayBalance(currentAccount);
+
+  // Display summary
+  calcDisplaySummary(currentAccount);
+};
+
 // Login
 
 let currentAccount;
@@ -180,14 +190,8 @@ btnLogin.addEventListener("click", (e) => {
     inputCloseUsername.vaue = inputLoginPin.vaue = "";
     inputLoginPin.blur();
 
-    // Display movements
-    displayMovements(currentAccount.movements);
-
-    // Display balance
-    calcDisplayBalance(currentAccount.movements);
-
-    // Display summary
-    calcDisplaySummary(currentAccount);
+    // Update Ui
+    updateUi(currentAccount);
 
     console.log("LogiN");
   }
@@ -195,4 +199,34 @@ btnLogin.addEventListener("click", (e) => {
 
 //---------------------------------------
 
+btnTransfer.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const amount = Number(inputTransferAmount.value);
+
+  const receiverAcc = accounts.find(
+    (acc) => acc.username === inputTransferTo.value
+  );
+
+  console.log(amount, receiverAcc);
+
+  // when page relodes input transfer is cleared
+
+  inputTransferAmount.value = inputTransferTo.value = "";
+
+  if (
+    amount > 0 &&
+    receiverAcc &&
+    currentAccount.balance >= amount &&
+    receiverAcc?.username !== currentAccount.username
+  ) {
+    // Doing transfer
+    console.log("Transfer valid");
+    currentAccount.movements.push(-amount);
+    receiverAcc.movements.push(amount);
+
+    // UpdateUi
+    updateUi(currentAccount);
+  }
+});
 //---------------------------------------
