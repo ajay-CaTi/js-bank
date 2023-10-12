@@ -1,4 +1,4 @@
-// Delete account DONE
+// Loan , Sorting
 "use strict";
 
 /////////////////////////////////////////////////
@@ -79,10 +79,13 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 //-------------------------
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = "";
 
-  movements.forEach((mov, i) => {
+  // sort
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  movs.forEach((mov, i) => {
     const type = mov > 0 ? "deposit" : "withdrawal";
 
     const html = `<div class="movements__row">
@@ -240,6 +243,28 @@ btnTransfer.addEventListener("click", (e) => {
 });
 //---------------------------------------
 
+btnLoan.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  if (
+    amount > 0 &&
+    currentAccount.movements.some((mov) => mov >= amount * 0.1)
+  ) {
+    // Add movement
+    currentAccount.movements.push(amount);
+
+    //upadte UI
+    updateUi(currentAccount);
+  }
+
+  // clear input fiels
+  inputLoanAmount.value = "";
+});
+
+//---------------------------------------
+
 // close account
 
 btnClose.addEventListener("click", (e) => {
@@ -264,6 +289,29 @@ btnClose.addEventListener("click", (e) => {
   inputClosePin.value = "";
 });
 
+// SORT
+let sorted = false;
+
+btnSort.addEventListener("click", (e) => {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
+
+//  Create an array from array like objects
+
+labelBalance.addEventListener("click", () => {
+  const movementsUi = Array.from(
+    document.querySelectorAll(".movements__value"),
+    (el) => Number(el.textContent.replace("€", ""))
+  );
+
+  console.log(movementsUi);
+
+  // console.log(movementsUi.map((el) => Number(el.textContent.replace("€", ""))));
+});
+
 //---------------------------------------
+
 //---------------------------------------
 //---------------------------------------
