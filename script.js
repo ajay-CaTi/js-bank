@@ -1,3 +1,4 @@
+// Delete account DONE
 "use strict";
 
 /////////////////////////////////////////////////
@@ -101,6 +102,7 @@ const displayMovements = function (movements) {
 //-------------------------
 
 const calcDisplayBalance = function (acc) {
+  console.log(acc);
   acc.balance = acc.movements.reduce((acc, cur, i) => acc + cur, 0);
 
   labelBalance.textContent = `${acc.balance} EUR`;
@@ -156,13 +158,13 @@ createUsernames(accounts);
 // UPDATE UI
 const updateUi = function (acc) {
   // Display movements
-  displayMovements(currentAccount.movements);
+  displayMovements(acc.movements);
 
   // Display balance
-  calcDisplayBalance(currentAccount);
+  calcDisplayBalance(acc);
 
   // Display summary
-  calcDisplaySummary(currentAccount);
+  calcDisplaySummary(acc);
 };
 
 // Login
@@ -176,24 +178,31 @@ btnLogin.addEventListener("click", (e) => {
   currentAccount = accounts.find(
     (acc) => acc.username === inputLoginUsername.value
   );
-  console.log(currentAccount);
+  // console.log(currentAccount);
 
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     // Display ui and welcome message
     labelWelcome.textContent = `Welcome Back!.., ${
       currentAccount.owner.split(" ")[0]
     }`;
-    console.log(currentAccount.owner.split(" ")[0]);
-    containerApp.style.opacity = 100;
 
     // clear input fields
-    inputCloseUsername.vaue = inputLoginPin.vaue = "";
+    inputLoginUsername.value = "";
+    inputLoginPin.value = "";
+    console.log(inputCloseUsername.value, inputLoginPin.value);
     inputLoginPin.blur();
+
+    console.log(currentAccount.owner.split(" ")[0]);
+    containerApp.style.opacity = 100;
 
     // Update Ui
     updateUi(currentAccount);
 
     console.log("LogiN");
+  } else {
+    console.log(
+      `Wrong userName ${inputLoginUsername.value} or Password ${inputLoginPin.value}`
+    );
   }
 });
 
@@ -229,4 +238,32 @@ btnTransfer.addEventListener("click", (e) => {
     updateUi(currentAccount);
   }
 });
+//---------------------------------------
+
+// close account
+
+btnClose.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      (acc) => acc.username === currentAccount.username
+    );
+    console.log(index);
+
+    // delete user
+    accounts.splice(index, 1);
+
+    // hide Ui
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = "";
+  inputClosePin.value = "";
+});
+
+//---------------------------------------
+//---------------------------------------
 //---------------------------------------
